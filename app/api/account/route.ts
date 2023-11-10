@@ -20,10 +20,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: "Account bor" });
     }
 
-    if (allAccounts && allAccounts.length === 2) {
+    if (allAccounts && allAccounts.length === 4) {
       return NextResponse.json({
         success: false,
-        message: "faqat 2ta Account kirita olasan",
+        message: "faqat 4ta Account kirita olasan",
       });
     }
     const hashPin = await hash(pin, 10);

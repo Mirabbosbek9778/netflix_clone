@@ -10,7 +10,7 @@ import LoginAccountForm from "../form/loginAccountFrom";
 import { AccountProps, AccountResponse } from "@/types";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-import { toast } from "../ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 
 const ManageAccount = () => {
   const [isDelete, setIsDelete] = useState<boolean>(false);
@@ -27,7 +27,7 @@ const ManageAccount = () => {
           `/api/account?uid=${session?.user?.uid}`
         );
 
-        data.success && setAccounts(data?.data);
+        data.success && setAccounts(data?.data as AccountProps[]);
       } catch (e) {
         return toast({
           title: "Account kiritilmadi",
@@ -38,6 +38,36 @@ const ManageAccount = () => {
     };
     getAllAccounts();
   }, [session]);
+
+  const onDelete = async (id: string) => {
+    try {
+      const isConfirmed = confirm("Accountni ochirishni hohlaysizmi?");
+      if (isConfirmed) {
+        const { data } = await axios.delete<AccountResponse>(
+          `/api/account?id=${id}`
+        );
+        if (data.success) {
+          setAccounts(accounts.filter((account) => account._id !== id));
+          return toast({
+            title: "Acccountingiz ochirildi o'chirildi",
+            description: "Sizni Accountingiz muaffaqiyatli ochirildi",
+          });
+        } else {
+          return toast({
+            title: "Error",
+            description: data?.message,
+            variant: "destructive",
+          });
+        }
+      }
+    } catch (e) {
+      return toast({
+        title: "Error",
+        description: "An error occurred while fetching your accounts",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <div
       className={
@@ -54,6 +84,7 @@ const ManageAccount = () => {
             <li
               key={account._id}
               onClick={() => {
+                if (isDelete) return;
                 setOpen(true);
                 setState("login");
               }}
@@ -77,6 +108,7 @@ const ManageAccount = () => {
                 </div>
                 {isDelete ? (
                   <div
+                    onClick={() => onDelete(account._id)}
                     className={
                       "absolute transform bottom-0 z-10 cursor-pointer"
                     }
@@ -93,17 +125,19 @@ const ManageAccount = () => {
               </div>
             </li>
           ))}
-          <li
-            onClick={() => {
-              setOpen(true);
-              setState("create");
-            }}
-            className={
-              "border bg-[#e5b109] font-bold text-xl border-black max-w-[200px] rounded min-w-[84px] max-h-[200px] min-h-[84px] w-[155px] h-[155px] cursor-pointer flex justify-center items-center"
-            }
-          >
-            Add account
-          </li>
+          {accounts && accounts.length < 4 ? (
+            <li
+              onClick={() => {
+                setOpen(true);
+                setState("create");
+              }}
+              className={
+                "border bg-[#e5b109] font-bold text-xl border-black max-w-[200px] rounded min-w-[84px] max-h-[200px] min-h-[84px] w-[155px] h-[155px] cursor-pointer flex justify-center items-center"
+              }
+            >
+              Add account
+            </li>
+          ) : null}
         </ul>
 
         <Button
@@ -120,7 +154,12 @@ const ManageAccount = () => {
         <DialogContent>
           {state === "login" && <LoginAccountForm />}
           {state === "create" && (
-            <CreateAccountForm uid={session?.user?.uid} setOpen={setOpen} />
+            <CreateAccountForm
+              uid={session?.user?.uid}
+              setOpen={setOpen}
+              setAccounts={setAccounts}
+              accounts={accounts}
+            />
           )}
         </DialogContent>
       </Dialog>

@@ -16,15 +16,17 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import PinInput from "react-pin-input";
 import axios from "axios";
-import { AccountResponse } from "@/types";
+import { AccountProps, AccountResponse } from "@/types";
 import { toast } from "../ui/use-toast";
 
 interface Props {
   uid: string;
   setOpen: Dispatch<SetStateAction<boolean>>;
+  setAccounts: Dispatch<SetStateAction<AccountProps[]>>;
+  accounts: AccountProps[];
 }
 
-const CreateAccountForm = ({ uid, setOpen }: Props) => {
+const CreateAccountForm = ({ uid, setOpen, setAccounts }: Props) => {
   const form = useForm<z.infer<typeof createAccountSchema>>({
     resolver: zodResolver(createAccountSchema),
     defaultValues: {
@@ -44,6 +46,10 @@ const CreateAccountForm = ({ uid, setOpen }: Props) => {
       if (data.success) {
         setOpen(false);
         form.reset();
+        setAccounts((prevAccounts) => [
+          ...prevAccounts,
+          data.data as unknown as AccountProps,
+        ]);
         return toast({
           title: "Account kiritildi",
           description: "account muaffaqiyatli kiritildi",
