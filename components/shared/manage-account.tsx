@@ -11,12 +11,17 @@ import { AccountProps, AccountResponse } from "@/types";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { toast } from "@/components/ui/use-toast";
+import Loader from "./loader";
 
 const ManageAccount = () => {
   const [isDelete, setIsDelete] = useState<boolean>(false);
   const [open, setOpen] = useState(false);
   const [state, setState] = useState<"login" | "create">("create");
   const [accounts, setAccounts] = useState<AccountProps[]>([]);
+  const [currentAccount, setCurrentAccount] = useState<AccountProps | null>(
+    null
+  );
+  const [isLoading, setisLoading] = useState(true);
 
   const { data: session }: any = useSession();
 
@@ -34,6 +39,8 @@ const ManageAccount = () => {
           description: "hato",
           variant: "destructive",
         });
+      } finally {
+        setisLoading(false);
       }
     };
     getAllAccounts();
@@ -68,6 +75,8 @@ const ManageAccount = () => {
       });
     }
   };
+
+  if (isLoading) return <Loader />;
   return (
     <div
       className={
@@ -79,65 +88,71 @@ const ManageAccount = () => {
           Who is the Watching?
         </h1>
 
-        <ul className={"flex p-0 my-12"}>
-          {accounts.map((account) => (
-            <li
-              key={account._id}
-              onClick={() => {
-                if (isDelete) return;
-                setOpen(true);
-                setState("login");
-              }}
-              className={
-                "max-w-[200px] w-[155px] cursor-pointer flex flex-col items-center gap-3 min-w-[200px]"
-              }
-            >
-              <div className="relative">
-                <div
-                  className={
-                    "max-w-[200px] rounded min-w-[84px] max-h-[200px] min-h-[84px] object-cover w-[155px] h-[155px] relative"
-                  }
-                >
-                  <Image
-                    src={
-                      "https://occ-0-2611-3663.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABfNXUMVXGhnCZwPI1SghnGpmUgqS_J-owMff-jig42xPF7vozQS1ge5xTgPTzH7ttfNYQXnsYs4vrMBaadh4E6RTJMVepojWqOXx.png?r=1d4"
-                    }
-                    alt={"account"}
-                    fill
-                  />
-                </div>
-                {isDelete ? (
-                  <div
-                    onClick={() => onDelete(account._id)}
+        <ul className={"flex p-0 my-12 gap-4"}>
+          {isLoading ? null : (
+            <>
+              {accounts &&
+                accounts.map((account) => (
+                  <li
+                    key={account._id}
+                    onClick={() => {
+                      if (isDelete) return;
+                      setOpen(true);
+                      setState("login");
+                      setCurrentAccount(account);
+                    }}
                     className={
-                      "absolute transform bottom-0 z-10 cursor-pointer"
+                      "max-w-[200px] w-[155px] cursor-pointer flex flex-col items-center gap-3 min-w-[200px]"
                     }
                   >
-                    <Trash2 className={"w-8 h-8 text-red-600"} />
-                  </div>
-                ) : null}
-              </div>
-              <div className={"flex items-center gap-1"}>
-                <span className={"font-mono font-bold text-xl"}>
-                  {account?.name}
-                </span>
-                <LockKeyhole />
-              </div>
-            </li>
-          ))}
-          {accounts && accounts.length < 4 ? (
-            <li
-              onClick={() => {
-                setOpen(true);
-                setState("create");
-              }}
-              className={
-                "border bg-[#e5b109] font-bold text-xl border-black max-w-[200px] rounded min-w-[84px] max-h-[200px] min-h-[84px] w-[155px] h-[155px] cursor-pointer flex justify-center items-center"
-              }
-            >
-              Add account
-            </li>
-          ) : null}
+                    <div className="relative">
+                      <div
+                        className={
+                          "max-w-[200px] rounded min-w-[84px] max-h-[200px] min-h-[84px] object-cover w-[155px] h-[155px] relative"
+                        }
+                      >
+                        <Image
+                          src={
+                            "https://occ-0-2611-3663.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABfNXUMVXGhnCZwPI1SghnGpmUgqS_J-owMff-jig42xPF7vozQS1ge5xTgPTzH7ttfNYQXnsYs4vrMBaadh4E6RTJMVepojWqOXx.png?r=1d4"
+                          }
+                          alt={"account"}
+                          fill
+                        />
+                      </div>
+                      {isDelete ? (
+                        <div
+                          onClick={() => onDelete(account._id)}
+                          className={
+                            "absolute transform bottom-0 z-10 cursor-pointer"
+                          }
+                        >
+                          <Trash2 className={"w-8 h-8 text-red-600"} />
+                        </div>
+                      ) : null}
+                    </div>
+                    <div className={"flex items-center gap-1"}>
+                      <span className={"font-mono font-bold text-xl"}>
+                        {account?.name}
+                      </span>
+                      <LockKeyhole />
+                    </div>
+                  </li>
+                ))}
+              {accounts && accounts.length < 4 ? (
+                <li
+                  onClick={() => {
+                    setOpen(true);
+                    setState("create");
+                  }}
+                  className={
+                    "border bg-[#e5b109] font-bold text-xl border-black max-w-[200px] rounded min-w-[84px] max-h-[200px] min-h-[84px] w-[155px] h-[155px] cursor-pointer flex justify-center items-center"
+                  }
+                >
+                  Add account
+                </li>
+              ) : null}
+            </>
+          )}
         </ul>
 
         <Button
@@ -152,7 +167,9 @@ const ManageAccount = () => {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          {state === "login" && <LoginAccountForm />}
+          {state === "login" && (
+            <LoginAccountForm currentAccount={currentAccount} />
+          )}
           {state === "create" && (
             <CreateAccountForm
               uid={session?.user?.uid}

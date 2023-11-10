@@ -1,28 +1,69 @@
+"use client";
+
 import React, { useState } from "react";
 import PinInput from "react-pin-input";
 import { Loader2 } from "lucide-react";
+import { AccountProps, AccountResponse } from "@/types";
+import { toast } from "@/components/ui/use-toast";
+import axios from "axios";
+import { useGlobalContext } from "@/context";
+import { usePathname, useRouter } from "next/navigation";
 
-const LoginAccountForm = () => {
+interface Props {
+  currentAccount: AccountProps | null;
+}
+const LoginAccountForm = ({ currentAccount }: Props) => {
   const [error, setError] = useState(false);
   const [pin, setPin] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = (value: string) => {
+  const { setAccount } = useGlobalContext();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const onSubmit = async (value: string) => {
     setIsLoading(true);
-    console.log(value);
+    try {
+      const { data } = await axios.post<AccountResponse>(`/api/account/login`, {
+        uid: currentAccount?.uid,
+        accountId: currentAccount?._id,
+        pin: value,
+      });
+
+      if (data.success) {
+        // @ts-ignore
+        setAccount(data.data as AccountProps);
+        sessionStorage.setItem("account", JSON.stringify(data.data));
+        router.push(pathname);
+        return toast({
+          title: "Account unlocked",
+          description: "Your account has been unlocked successfully",
+        });
+      } else {
+        setError(true);
+      }
+    } catch (e) {
+      return toast({
+        title: "Error",
+        description: "An error occurred while logging in",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <>
-      <h1 className="text-gray-400 font-bold text-[16px] mb-4 text-center">
+      <h1 className="text-gray-400 font-bold text-[16px] mb-4">
         Profile Lock is currently ON
       </h1>
       {error ? (
         <h2 className="text-red-500 text-center font-bold text-[20px]">
-          Who ops, wrong PIN. Please try again
+          Whoops, wrong PIN. Please try again
         </h2>
       ) : (
-        <h2 className="text-white text-center font-bold text-[18px]">
+        <h2 className="text-white text-center font-bold text-[20px]">
           Enter your PIN to access this profile
         </h2>
       )}

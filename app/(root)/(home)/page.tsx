@@ -1,5 +1,4 @@
-import React from "react";
-import { redirect } from "next/dist/server/api-utils";
+import { redirect } from "next/navigation";
 
 const Page = () => {
   return redirect("/browse");
