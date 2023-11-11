@@ -114,3 +114,14 @@
     -webkit-transform: rotate(360deg);
   }
 }
+
+.cardWrapper:hover {
+  background: black;
+}
+
+.cardWrapper:hover .buttonWrapper {
+  display: flex;
+  z-index: 2;
+  width: 100%;
+  justify-content: center;
+}

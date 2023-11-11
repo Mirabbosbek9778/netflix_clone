@@ -10,13 +10,12 @@ import {
 import { useGlobalContext } from "@/context";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
-import { MenuItemsProps } from "@/types";
 import { menuItems } from "@/mock";
 import SearchBar from "../search/SearchBar";
+import { MenuItemProps } from "@/types";
 
 const Navbar = () => {
   const [showSearchBar, setShowSearchBar] = useState(false);
-
   const { account, setAccount } = useGlobalContext();
 
   const logout = () => {
@@ -26,9 +25,9 @@ const Navbar = () => {
   };
 
   return (
-    <div className={"relative"}>
-      <header className={"header h-[10vh] transition-all duration-100"}>
-        <div className={"flex items-center h-full space-x-2 md:space-x-10"}>
+    <div className="relative">
+      <header className="header h-[10vh] transition-all duration-100">
+        <div className="flex items-center h-full space-x-2 md:space-x-10">
           <a href="/browse">
             <Image
               src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
@@ -39,7 +38,7 @@ const Navbar = () => {
             />
           </a>
           <ul className={"hidden md:space-x-4 md:flex cursor-pointer"}>
-            {menuItems.map((item: MenuItemsProps) => (
+            {menuItems.map((item: MenuItemProps) => (
               <li
                 key={item.path}
                 className={
@@ -51,7 +50,6 @@ const Navbar = () => {
             ))}
           </ul>
         </div>
-
         <div className={"font-light flex items-center space-x-4 text-sm"}>
           {showSearchBar ? (
             <SearchBar setShowSearchBar={setShowSearchBar} />
@@ -67,7 +65,7 @@ const Navbar = () => {
                 <img
                   src="https://occ-0-2611-3663.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABfNXUMVXGhnCZwPI1SghnGpmUgqS_J-owMff-jig42xPF7vozQS1ge5xTgPTzH7ttfNYQXnsYs4vrMBaadh4E6RTJMVepojWqOXx.png?r=1d4"
                   alt="Current Profile"
-                  className="max-w-[30px] rounded min-w-[20px] max-h-[30px] min-h-[20px] object-cover w-[30px] h-[30px]"
+                  className="max-w-[30px] min-w-[20px] max-h-[30px] min-h-[20px] object-cover w-[30px] h-[30px] rounded-[50%]"
                 />
                 <p>{account && account.name}</p>
               </div>

@@ -1,6 +1,6 @@
-import { MenuItemsProps } from "@/types";
+import { MenuItemProps } from "@/types";
 
-export const menuItems: MenuItemsProps[] = [
+export const menuItems: MenuItemProps[] = [
   {
     id: "home",
     title: "Home",
