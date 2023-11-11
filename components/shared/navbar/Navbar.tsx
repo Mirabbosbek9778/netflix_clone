@@ -9,14 +9,33 @@ import {
 } from "@/components/ui/popover";
 import { useGlobalContext } from "@/context";
 import { signOut } from "next-auth/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { menuItems } from "@/mock";
 import SearchBar from "../search/SearchBar";
 import { MenuItemProps } from "@/types";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const { account, setAccount, setPageLoader } = useGlobalContext();
+
+  const router = useRouter();
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const { account, setAccount } = useGlobalContext();
+  const [isScrolled, setisScrolled] = useState(false);
+
+  useEffect(() => {
+    const handelScroll = () => {
+      if (window.scrollY > 100) {
+        setisScrolled(true);
+      } else {
+        setisScrolled(true);
+      }
+    };
+
+    window.addEventListener("scroll", handelScroll);
+
+    return () => window.addEventListener("scroll", handelScroll);
+  }, []);
 
   const logout = () => {
     sessionStorage.removeItem("account");
@@ -26,7 +45,12 @@ const Navbar = () => {
 
   return (
     <div className="relative">
-      <header className="header h-[10vh] transition-all duration-100">
+      <header
+        className={cn(
+          "header h-[10vh] transition-all duration-400 ease-in-out",
+          isScrolled && "bg-black"
+        )}
+      >
         <div className="flex items-center h-full space-x-2 md:space-x-10">
           <a href="/browse">
             <Image
@@ -40,6 +64,10 @@ const Navbar = () => {
           <ul className={"hidden md:space-x-4 md:flex cursor-pointer"}>
             {menuItems.map((item: MenuItemProps) => (
               <li
+                onClick={() => {
+                  router.push(item.path);
+                  setPageLoader(true);
+                }}
                 key={item.path}
                 className={
                   "cursor-pointer text-[18px] text-[#e5e5e5] transition duration-[.4s] hover:text-red-700 font-medium"
