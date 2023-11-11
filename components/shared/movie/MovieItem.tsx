@@ -5,11 +5,19 @@ import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { CheckCheckIcon, ChevronDown, PlusIcon } from "lucide-react";
+import { useGlobalContext } from "@/context";
 
 interface Props {
   movie: MovieProps;
 }
 const MovieItem = ({ movie }: Props) => {
+  const { setOpen, setMovie } = useGlobalContext();
+
+  const onHandlerPopap = () => {
+    setOpen(true);
+    setMovie(movie);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.5 }}
@@ -28,6 +36,7 @@ const MovieItem = ({ movie }: Props) => {
           alt="Media"
           fill
           className="rounded sm object-cover md:rounded hover:rounded-sm"
+          onClick={onHandlerPopap}
         />
         <div className="space-x-3 hidden absolute p-2 bottom-0 buttonWrapper">
           <button className="cursor-pointer border flex p-2 items-center gap-x-2 rounded-full text-sm font-semibold transition hover:opacity-90 border-white bg-black opacity-75 text-black">
@@ -38,7 +47,11 @@ const MovieItem = ({ movie }: Props) => {
             )}
           </button>
           <button className="cursor-pointer p-2 border flex items-center gap-x-2 rounded-full  text-sm font-semibold transition hover:opacity-90  border-white  bg-black opacity-75 ">
-            <ChevronDown color="#fff" className="h-7 w-7" />
+            <ChevronDown
+              color="#fff"
+              className="h-7 w-7"
+              onClick={onHandlerPopap}
+            />
           </button>
         </div>
       </div>

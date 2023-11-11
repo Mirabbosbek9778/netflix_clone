@@ -15,6 +15,7 @@ import SearchBar from "../search/SearchBar";
 import { MenuItemProps } from "@/types";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import MoviePopular from "../movie/MoviePopular";
 
 const Navbar = () => {
   const { account, setAccount, setPageLoader } = useGlobalContext();
@@ -78,6 +79,7 @@ const Navbar = () => {
             ))}
           </ul>
         </div>
+        <MoviePopular />
         <div className={"font-light flex items-center space-x-4 text-sm"}>
           {showSearchBar ? (
             <SearchBar setShowSearchBar={setShowSearchBar} />

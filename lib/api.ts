@@ -47,3 +47,26 @@ export const getMovieByGenre = async (type: string, id: string) => {
     console.log(e);
   }
 };
+
+export const getMoviesDetails = async (type?: string, id?: number) => {
+  try {
+    const { data } = await axios.get(
+      `${BASE_URL}/${type}/${id}?api_key=${API_KEY}&language=en-US&append_to_response=videos`
+    );
+    return { data, type };
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const getSimilarMovie = async (type?: string, id?: number) => {
+  try {
+    const { data } = await axios.get(
+      `${BASE_URL}/${type}/${id}/similar?api_key=${API_KEY}&language=en-US`
+    );
+
+    return data && data.results;
+  } catch (e) {
+    console.log(e);
+  }
+};
