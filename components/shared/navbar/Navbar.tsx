@@ -8,23 +8,48 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useGlobalContext } from "@/context";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { menuItems } from "@/mock";
 import SearchBar from "../search/SearchBar";
-import { MenuItemProps } from "@/types";
+import { AccountProps, AccountResponse, MenuItemProps } from "@/types";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import MoviePopular from "../movie/MoviePopular";
+import { toast } from "@/components/ui/use-toast";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Navbar = () => {
   const { account, setAccount, setPageLoader } = useGlobalContext();
+  const { data: session }: any = useSession();
 
   const router = useRouter();
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [isScrolled, setisScrolled] = useState(false);
+  const [accounts, setAccounts] = useState<AccountProps[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const getAllAccounts = async () => {
+      setIsLoading(true);
+      try {
+        const { data } = await axios.get<AccountResponse>(
+          `/api/account?uid=${session?.user?.uid}`
+        );
+        data.success && setAccounts(data?.data as AccountProps[]);
+      } catch (e) {
+        return toast({
+          title: "Account kiritilmadi",
+          description: "hato",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     const handelScroll = () => {
       if (window.scrollY > 100) {
         setisScrolled(true);
@@ -33,6 +58,7 @@ const Navbar = () => {
       }
     };
 
+    getAllAccounts();
     window.addEventListener("scroll", handelScroll);
 
     return () => window.addEventListener("scroll", handelScroll);
@@ -101,6 +127,32 @@ const Navbar = () => {
               </div>
             </PopoverTrigger>
             <PopoverContent>
+              {isLoading ? (
+                <div className="flex flex-col space-y-4">
+                  {[1, 2].map((_, i) => (
+                    <Skeleton className="w-full h-10" />
+                  ))}
+                </div>
+              ) : (
+                accounts &&
+                accounts.map((account) => (
+                  <div
+                    className="cursor-pointer flex gap-3 h-14 hover:bg-slate-800 rounded-md items-center px-4 py-2"
+                    key={account?._id}
+                    onClick={()=>{
+                      setAccount(null)
+                      sessionStorage.removeItem("account")
+                    }}
+                  >
+                    <img
+                      src="https://occ-0-2611-3663.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABfNXUMVXGhnCZwPI1SghnGpmUgqS_J-owMff-jig42xPF7vozQS1ge5xTgPTzH7ttfNYQXnsYs4vrMBaadh4E6RTJMVepojWqOXx.png?r=1d4"
+                      alt="Current Profile"
+                      className="max-w-[30px] rounded min-w-[20px] max-h-[30px] min-h-[20px] object-cover w-[30px] h-[30px]"
+                    />
+                    <p>{account?.name}</p>
+                  </div>
+                ))
+              )}
               <button
                 onClick={logout}
                 className={

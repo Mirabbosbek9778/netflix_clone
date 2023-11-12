@@ -1,12 +1,9 @@
 "use client";
 
-// import Navbar from "@/components/shared/navbar";
 import { MovieDataProps } from "@/types";
 import Navbar from "./navbar/Navbar";
 import Banner from "./banner/Banner";
 import Movie from "./movie/Movie";
-// import Banner from "@/components/shared/banner";
-// import MovieRow from "@/components/shared/movie/movie-row";
 
 interface Props {
   moviesData: MovieDataProps[];

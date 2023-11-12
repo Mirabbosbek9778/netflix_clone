@@ -3,9 +3,9 @@
 import { MovieProps } from "@/types";
 import React from "react";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { CheckCheckIcon, ChevronDown, PlusIcon } from "lucide-react";
 import { useGlobalContext } from "@/context";
+import CustomImage from "../custom/CustomImage";
 
 interface Props {
   movie: MovieProps;
@@ -29,12 +29,11 @@ const MovieItem = ({ movie }: Props) => {
       }}
     >
       <div className="relative cardWrapper h-28 min-w-[180px] cursor-pointer md:h-36 md:min-w-[260px] transform transition duration-500 hover:scale-110 hover:z-[999]">
-        <Image
-          src={`${process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE_URL}${
+        <CustomImage
+          image={`${process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE_URL}${
             movie?.backdrop_path || movie?.poster_path
           }`}
-          alt="Media"
-          fill
+          alt={"Image"}
           className="rounded sm object-cover md:rounded hover:rounded-sm"
           onClick={onHandlerPopap}
         />
