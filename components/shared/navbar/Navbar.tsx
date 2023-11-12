@@ -62,7 +62,7 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [session.user.uid]);
 
   const logout = () => {
     sessionStorage.removeItem("account");
@@ -135,7 +135,7 @@ const Navbar = () => {
               {isLoading ? (
                 <div className={"flex flex-col space-y-4"}>
                   {[1, 2].map((_, i) => (
-                    <Skeleton className={"w-full h-14"} />
+                    <Skeleton className={"w-full h-14"} key={i} />
                   ))}
                 </div>
               ) : (
