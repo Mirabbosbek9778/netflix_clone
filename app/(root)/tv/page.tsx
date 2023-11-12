@@ -7,8 +7,9 @@ import { useSession } from "next-auth/react";
 import Login from "@/components/shared/login";
 import ManageAccount from "@/components/shared/manage-account";
 import Loader from "@/components/shared/loader";
-import { getMovieByGenre } from "@/lib/api";
+// import { getMovieByGenre } from "@/lib/api";
 import Common from "@/components/shared/common";
+import { getMoviesByGenre } from "@/lib/api";
 
 const Page = () => {
   const [moviesData, setMoviesData] = useState<MovieDataProps[]>([]);
@@ -29,14 +30,14 @@ const Page = () => {
           family,
           war,
         ] = await Promise.all([
-          getMovieByGenre("tv", 10759),
-          getMovieByGenre("tv", 16),
-          getMovieByGenre("tv", 35),
-          getMovieByGenre("tv", 80),
-          getMovieByGenre("tv", 99),
-          getMovieByGenre("tv", 18),
-          getMovieByGenre("tv", 10751),
-          getMovieByGenre("tv", 10768),
+          getMoviesByGenre("tv", 10759),
+          getMoviesByGenre("tv", 16),
+          getMoviesByGenre("tv", 35),
+          getMoviesByGenre("tv", 80),
+          getMoviesByGenre("tv", 99),
+          getMoviesByGenre("tv", 18),
+          getMoviesByGenre("tv", 10751),
+          getMoviesByGenre("tv", 10768),
         ]);
 
         const allResult: MovieDataProps[] = [
