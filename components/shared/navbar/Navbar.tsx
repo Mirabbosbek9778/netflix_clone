@@ -10,39 +10,38 @@ import {
 import { useGlobalContext } from "@/context";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { menuItems } from "@/mock";
-import SearchBar from "../search/SearchBar";
-import { AccountProps, AccountResponse, MenuItemProps } from "@/types";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import MoviePopular from "../movie/MoviePopular";
-import { toast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { Loader2 } from "lucide-react";
+import { AccountProps, AccountResponse } from "@/types";
+import { toast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { menuItems } from "@/mock";
+import MoviePopup from "../movie/MoviePopular";
+import SearchBar from "../search/SearchBar";
 
 const Navbar = () => {
-  const { account, setAccount, setPageLoader } = useGlobalContext();
-  const { data: session }: any = useSession();
-
-  const router = useRouter();
   const [showSearchBar, setShowSearchBar] = useState(false);
-  const [isScrolled, setisScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const [accounts, setAccounts] = useState<AccountProps[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { account, setAccount, setPageLoader } = useGlobalContext();
+  const { data: session }: any = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     const getAllAccounts = async () => {
       setIsLoading(true);
       try {
         const { data } = await axios.get<AccountResponse>(
-          `/api/account?uid=${session?.user?.uid}`
+          `/api/account?uid=${session.user.uid}`
         );
-        data.success && setAccounts(data?.data as AccountProps[]);
+        data.success && setAccounts(data.data as AccountProps[]);
       } catch (e) {
         return toast({
-          title: "Account kiritilmadi",
-          description: "hato",
+          title: "Error",
+          description: "An error occurred while fetching your accounts",
           variant: "destructive",
         });
       } finally {
@@ -50,18 +49,19 @@ const Navbar = () => {
       }
     };
 
-    const handelScroll = () => {
+    const handleScroll = () => {
       if (window.scrollY > 100) {
-        setisScrolled(true);
+        setIsScrolled(true);
       } else {
-        setisScrolled(true);
+        setIsScrolled(false);
       }
     };
 
     getAllAccounts();
-    window.addEventListener("scroll", handelScroll);
 
-    return () => window.addEventListener("scroll", handelScroll);
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const logout = () => {
@@ -71,25 +71,27 @@ const Navbar = () => {
   };
 
   return (
-    <div className="relative">
+    <div className={"relative"}>
       <header
         className={cn(
-          "header h-[10vh] transition-all duration-400 ease-in-out",
+          "header h-[10vh] hover:bg-black transition-all duration-400 ease-in-out",
           isScrolled && "bg-black"
         )}
       >
-        <div className="flex items-center h-full space-x-2 md:space-x-10">
-          <a href="/browse">
-            <Image
-              src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
-              width={120}
-              height={120}
-              alt="NETFLIX"
-              className="cursor-pointer object-contain"
-            />
-          </a>
+        <div className={"flex items-center h-full space-x-2 md:space-x-10"}>
+          <Image
+            src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg"
+            width={120}
+            height={120}
+            alt="NETFLIX"
+            className="cursor-pointer object-contain"
+            onClick={() => {
+              router.push("/browse");
+              setPageLoader(true);
+            }}
+          />
           <ul className={"hidden md:space-x-4 md:flex cursor-pointer"}>
-            {menuItems.map((item: MenuItemProps) => (
+            {menuItems.map((item) => (
               <li
                 onClick={() => {
                   router.push(item.path);
@@ -97,7 +99,7 @@ const Navbar = () => {
                 }}
                 key={item.path}
                 className={
-                  "cursor-pointer text-[18px] text-[#e5e5e5] transition duration-[.4s] hover:text-red-700 font-medium"
+                  "cursor-pointer text-[16px] font-light text-[#e5e5e5] transition duration-[.4s] hover:text-[#b3b3b3]"
                 }
               >
                 {item.title}
@@ -105,7 +107,9 @@ const Navbar = () => {
             ))}
           </ul>
         </div>
-        <MoviePopular />
+
+        <MoviePopup />
+
         <div className={"font-light flex items-center space-x-4 text-sm"}>
           {showSearchBar ? (
             <SearchBar setShowSearchBar={setShowSearchBar} />
@@ -115,33 +119,36 @@ const Navbar = () => {
               className={"hidden sm:inline sm:w-6 sm:h-6 cursor-pointer"}
             />
           )}
+
           <Popover>
             <PopoverTrigger>
               <div className="flex gap-2 items-center cursor-pointer">
                 <img
                   src="https://occ-0-2611-3663.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABfNXUMVXGhnCZwPI1SghnGpmUgqS_J-owMff-jig42xPF7vozQS1ge5xTgPTzH7ttfNYQXnsYs4vrMBaadh4E6RTJMVepojWqOXx.png?r=1d4"
                   alt="Current Profile"
-                  className="max-w-[30px] min-w-[20px] max-h-[30px] min-h-[20px] object-cover w-[30px] h-[30px] rounded-[50%]"
+                  className="max-w-[30px] rounded min-w-[20px] max-h-[30px] min-h-[20px] object-cover w-[30px] h-[30px]"
                 />
                 <p>{account && account.name}</p>
               </div>
             </PopoverTrigger>
             <PopoverContent>
               {isLoading ? (
-                <div className="flex flex-col space-y-4">
+                <div className={"flex flex-col space-y-4"}>
                   {[1, 2].map((_, i) => (
-                    <Skeleton className="w-full h-10" />
+                    <Skeleton className={"w-full h-14"} />
                   ))}
                 </div>
               ) : (
                 accounts &&
                 accounts.map((account) => (
                   <div
-                    className="cursor-pointer flex gap-3 h-14 hover:bg-slate-800 rounded-md items-center px-4 py-2"
-                    key={account?._id}
-                    onClick={()=>{
-                      setAccount(null)
-                      sessionStorage.removeItem("account")
+                    className={
+                      "cursor-pointer flex gap-3 h-14 hover:bg-slate-800 rounded-md items-center px-4 py-2"
+                    }
+                    key={account._id}
+                    onClick={() => {
+                      setAccount(null);
+                      sessionStorage.removeItem("account");
                     }}
                   >
                     <img
@@ -149,17 +156,18 @@ const Navbar = () => {
                       alt="Current Profile"
                       className="max-w-[30px] rounded min-w-[20px] max-h-[30px] min-h-[20px] object-cover w-[30px] h-[30px]"
                     />
-                    <p>{account?.name}</p>
+                    <p>{account.name}</p>
                   </div>
                 ))
               )}
+
               <button
                 onClick={logout}
                 className={
-                  "mt-4 text-center w-full text-sm font-light hover:bg-red-600 rounded-md py-2 border border-white/40 h-[50px]"
+                  "mt-4 text-center w-full text-sm font-light hover:bg-slate-800 rounded-md py-2 border border-white/40 h-[56px]"
                 }
               >
-                Sign Out
+                Sign out of Netflix
               </button>
             </PopoverContent>
           </Popover>
