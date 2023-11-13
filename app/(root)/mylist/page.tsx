@@ -5,7 +5,6 @@ import { useGlobalContext } from "@/context";
 import { useEffect, useState } from "react";
 import { FavouriteProps, MovieProps } from "@/types";
 import { toast } from "@/components/ui/use-toast";
-// import {getFavourites} from "@/lib/api";
 import Login from "@/components/shared/login";
 import ManageAccount from "@/components/shared/manage-account";
 import Loader from "@/components/shared/loader";
@@ -40,7 +39,7 @@ const Page = () => {
     if (session && account) {
       getData();
     }
-  }, [account, session,setPageLoader]);
+  }, [account, session, setPageLoader]);
 
   if (session === null) return <Login />;
   if (account === null) return <ManageAccount />;
@@ -49,14 +48,14 @@ const Page = () => {
   return (
     <main className={"flex min-h-screen flex-col"}>
       <Navbar />
-      <div className={"md:px-12 px-4"}>
+      <div className="md:px-12 px-4">
         {favourites && favourites.length === 0 ? (
           <div className="lg:px-24 lg:py-24 md:py-20 md:px-44 px-4 py-24 items-center flex justify-center flex-col-reverse lg:flex-row md:gap-28 gap-16">
             <div className="xl:pt-24 w-full xl:w-1/2 relative pb-12 lg:pb-0">
               <div className="relative">
                 <div className="">
                   <h1 className="my-2 text-gray-100 font-bold text-2xl">
-                    Looks like you don't have any favourites yet!
+                    Looks like you dont have any favourites yet!
                   </h1>
                   <p className="my-2 text-gray-300">
                     Sorry about that! Please visit our hompage to get where you
@@ -75,7 +74,10 @@ const Page = () => {
               </div>
             </div>
             <div>
-              <img src="https://i.ibb.co/ck1SGFJ/Group.png" />
+              <img
+                src="https://i.ibb.co/ck1SGFJ/Group.png"
+                alt="Illustration of something related to the content"
+              />
             </div>
           </div>
         ) : (
