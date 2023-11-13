@@ -13,7 +13,7 @@ const GlobalContext = ({ children }: ChildProps) => {
 
   useEffect(() => {
     setAccount(JSON.parse(sessionStorage.getItem("account")!));
-  }, []);
+  }, [setPageLoader]);
 
   return (
     <Context.Provider

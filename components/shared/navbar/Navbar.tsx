@@ -62,7 +62,7 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [session.user.uid]);
+  }, [session?.user?.uid, setPageLoader]);
 
   const logout = () => {
     sessionStorage.removeItem("account");
