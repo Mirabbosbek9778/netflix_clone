@@ -71,8 +71,8 @@ const Page = () => {
     getAllMovies();
   }, [setPageLoader]);
 
-  if (session === null) return <Login />;
-  if (account === null) return <ManageAccount />;
+  // if (session === null) return <Login />;
+  // if (account === null) return <ManageAccount />;
   if (pageLoader) return <Loader />;
 
   return <Common moviesData={moviesData} />;
