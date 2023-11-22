@@ -5,11 +5,10 @@ import { MovieDataProps, MovieProps } from "@/types";
 import { useGlobalContext } from "@/context";
 import { useSession } from "next-auth/react";
 import Login from "@/components/shared/login";
-import ManageAccount from "@/components/shared/manage-account";
 import Loader from "@/components/shared/loader";
-// import { getMovieByGenre } from "@/lib/api";
 import Common from "@/components/shared/common";
 import { getMoviesByGenre } from "@/lib/api";
+import ManageAccount from "@/components/shared/manage-account";
 
 const Page = () => {
   const [moviesData, setMoviesData] = useState<MovieDataProps[]>([]);

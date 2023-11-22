@@ -23,13 +23,13 @@ const Login = () => {
           <div className={"flex items-center flex-col"}>
             <h1 className={"text-4xl font-bold"}>Login</h1>
             <Button
-              onClick={() => signIn("github")}
+              onClick={() => signIn("google")}
               className={
                 "mt-4 flex items-center gap-2 w-full h-[56px] bg-red-500 !text-white hove:bg-red-800"
               }
             >
               <AiFillGithub className={"w-7 h-7"} />
-              Sign in with GitHub
+              Sign in with Google
             </Button>
           </div>
         </div>

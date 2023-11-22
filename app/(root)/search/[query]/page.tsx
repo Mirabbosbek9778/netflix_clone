@@ -55,10 +55,10 @@ const Page = () => {
     };
 
     getData();
-  }, [setPageLoader]);
+  }, [params.query, setPageLoader]);
 
-  // if (session === null) return <Login />;
-  // if (account === null) return <ManageAccount />;
+  if (session === null) return <Login />;
+  if (account === null) return <ManageAccount />;
   if (pageLoader) return <Loader />;
 
   return (

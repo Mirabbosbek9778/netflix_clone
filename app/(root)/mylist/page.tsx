@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useSession } from "next-auth/react";
@@ -41,8 +42,8 @@ const Page = () => {
     }
   }, [account, session, setPageLoader]);
 
-  // if (session === null) return <Login />;
-  // if (account === null) return <ManageAccount />;
+  if (session === null) return <Login />;
+  if (account === null) return <ManageAccount />;
   if (pageLoader) return <Loader />;
 
   return (
